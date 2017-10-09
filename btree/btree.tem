@@ -1,0 +1,9 @@
+template<typename T>
+btree<T>::btree(size_t maxNodeElems) :
+    root_(nullptr), head_(nullptr), tail_(nullptr), maxSize(maxNodeElems),
+      totalSize(0) {}
+
+template<typename T>
+btree<T>::~btree() {
+  delete root_;
+}
