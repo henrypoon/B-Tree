@@ -21,7 +21,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 				findLastParent();
 				// std::cout << (index == -1) << std::endl;
 					// exit(1);
-				if (index == -1) {
+				if (isEnd) {
 					pointee = temp;
 					index = pointee->getSize();
 				}
@@ -33,7 +33,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 		} else {
 			typename btree<T>::Node* temp = pointee;
 			findLastParent();
-			if (index == -1) {
+			if (isEnd) {
 				pointee = temp;
 				index = pointee->getSize();
 			}
@@ -53,7 +53,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
 			} else {
 				typename btree<T>::Node* temp = pointee;
 				findFirstParent();
-				if (index == -1) {
+				if (isEnd) {
 					pointee = temp;
 					index = 0;
 				}
@@ -72,7 +72,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
 		} else {
 			typename btree<T>::Node* temp = pointee;
 			findFirstParent();
-			if (index == -1) {
+			if (isEnd) {
 				pointee = temp;
 				index = 0;
 			}
@@ -92,7 +92,7 @@ template<typename T> void btree_iterator<T>::findFirstParent() {
 		}
 		pointee = parent;
 	}
-	index = -1;
+	isEnd = true;
 }
 
 
@@ -123,7 +123,7 @@ template<typename T> void btree_iterator<T>::findLastParent(){
 		}
 		pointee = parent;
 	}
-	index = -1;
+	isEnd = true;
 }
 
 
@@ -169,7 +169,7 @@ template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator+
 			} else {
 				typename btree<T>::Node* temp = pointee;
 				findLastParent();
-				if (index == -1) {
+				if (isEnd) {
 					pointee = temp;
 					index = pointee->getSize();
 				}
@@ -181,7 +181,7 @@ template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator+
 		} else {
 			typename btree<T>::Node* temp = pointee;
 			findLastParent();
-			if (index == -1) {
+			if (isEnd) {
 				pointee = temp;
 				index = pointee->getSize();
 			}
@@ -200,7 +200,7 @@ template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator-
 			} else {
 				typename btree<T>::Node* temp = pointee;
 				findFirstParent();
-				if (index == -1) {
+				if (isEnd) {
 					pointee = temp;
 					index = 0;
 				}
@@ -219,7 +219,7 @@ template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator-
 		} else {
 			typename btree<T>::Node* temp = pointee;
 			findFirstParent();
-			if (index == -1) {
+			if (isEnd) {
 				pointee = temp;
 				index = 0;
 			}
@@ -239,7 +239,7 @@ template<typename T> void const_btree_iterator<T>::findFirstParent() {
 		}
 		pointee = parent;
 	}
-	index = -1;
+	isEnd = true;
 }
 
 
@@ -269,7 +269,7 @@ template<typename T> void const_btree_iterator<T>::findLastParent(){
 		}
 		pointee = parent;
 	}
-	index = -1;
+	isEnd = true;
 }
 
 

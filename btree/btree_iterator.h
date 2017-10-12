@@ -32,7 +32,7 @@ public:
 	bool				operator!=(const btree_iterator& b) const;
 	btree_iterator&		operator =(const btree_iterator& b);
 
-	btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0): pointee(pointee_), index(index_) {}
+	btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
 
 private:
     void findFirstChild();
@@ -41,6 +41,7 @@ private:
     void findLastParent();
 	typename btree<T>::Node *pointee;
 	size_t index;
+	bool isEnd;
 };
 
 
@@ -62,7 +63,7 @@ public:
 	bool				operator!=(const const_btree_iterator& b) const;
 	const_btree_iterator&		operator =(const const_btree_iterator& b);
 
-	const_btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0): pointee(pointee_), index(index_) {}
+	const_btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
 
 private:
     void findFirstChild();
@@ -71,6 +72,7 @@ private:
     void findLastParent();
 	typename btree<T>::Node *pointee;
 	size_t index;
+	bool isEnd;
 };
 
 #include "btree_iterator.tem"
