@@ -11,7 +11,7 @@
 // iterator related interface stuff here; would be nice if you called your
 // iterator class btree_iterator (and possibly const_btree_iterator)
 template<typename T> class btree;
-template<typename T> class btree_Iterator;
+template<typename T> class btree_iterator;
 template<typename T> class const_btree_iterator;
 
 template<typename T> class btree_iterator {

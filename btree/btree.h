@@ -245,7 +245,7 @@ private:
         }
 
         const size_t findIndex(Node* node) const;
-        const auto findInsert(const T& elem) const;
+        const typename std::vector<T* const>::iterator findInsert(const T& elem) const;
         const std::pair<int, bool> findInsertIndex(const T& elem) const;
 
         std::vector<T*> elems;

@@ -178,7 +178,7 @@ template<typename T> const std::pair<int, bool> btree<T>::Node::findInsertIndex(
 
 
 
-template<typename T> const auto btree<T>::Node::findInsert(const T& elem) const {
+template<typename T> const typename std::vector<T* const>::iterator btree<T>::Node::findInsert(const T& elem) const {
 	typename std::vector<T* const>::iterator e = std::find_if(elems.begin(), elems.end(), [elem] (const T* e) {
 		return elem < *e;
 	});
