@@ -37,7 +37,8 @@ public:
 private:
     void findFirstChild();
     void findLastChild();
-    void findParentLast();
+    void findFirstParent();
+    void findLastParent();
 	typename btree<T>::Node *pointee;
 	size_t index;
 };
@@ -66,7 +67,8 @@ public:
 private:
     void findFirstChild();
     void findLastChild();
-    void findParentLast();
+    void findFirstParent();
+    void findLastParent();
 	typename btree<T>::Node *pointee;
 	size_t index;
 };

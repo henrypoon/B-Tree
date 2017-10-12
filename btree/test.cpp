@@ -42,22 +42,44 @@ int main(void) {
   // initialise random number generator with 'random' seed
 
   // insert lots of random numbers and compare with a known correct container
-  btree<char> *t = new btree<char>(40);
-  pair<btree<char>::iterator, bool> result = t->insert('A');
-  result = t->insert('Z');
+  btree<int> *t = new btree<int>(4);
+  pair<btree<int>::iterator, bool> result = t->insert(2);
+  result = t->insert(3);
+  // result = t->insert(5);
+  // result = t->insert(6);
+
+  // t->printAll();
+
+
+  // btree<int>::iterator a = t->end();
+  //   cout << *a << " fuck you" << endl;
+
+  btree<int>::reverse_iterator b = t->rbegin();
+    cout << *b << " fuck me" << endl;
+
+  // for (; riter != t->rend(); ++riter) {
+  // }
+  // result = t->insert('i');
+  // result = t->insert('l');
+  // result = t->insert('h');
+  // result = t->insert('b');
+  // result = t->insert('x');
+  // result = t->insert('r');
   // result = t->insert('C');
   
-  btree<char> cp;
-  cp = *t;
+  // btree<char> cp;
+  // cp = *t;
   // t->printAll();
   
-  ofstream ofs1("out1");
+  // ofstream ofs1("out1");
 
-  std::copy(t->begin(), t->end(), ostream_iterator<string>(ofs1, " "));
-  ofs1 << endl;
-  ofs1 << *t << endl;
+  // for(btree<char>::reverse_iterator riter = t->rbegin(); riter != t->rend(); ++riter)
+    // cout << *riter << endl;
+  // ofs1 << endl;
+  // ofs1 << *t << endl;
 
-
+  // btree<char>::reverse_iterator rite = t ->rbegin();
+  // cout << *rite << endl;
 
 
   // 

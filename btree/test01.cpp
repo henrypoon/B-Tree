@@ -159,39 +159,49 @@ int main(void) {
 
   cout << "twl.txt sorted by our wonderful tree..." << endl;
   // Such beautiful code with iterators...
-  for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
-    cout << *iter << endl;
+  // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
+  //   cout << *iter << endl;
+  strTable->printAll();
 
-  // // reverse iterator
-  // btree<string>::reverse_iterator riter = strTable->rbegin();
+  // reverse iterator
+  btree<string>::reverse_iterator riter = strTable->rbegin();
   // btree<string>::const_iterator citer = strTable->begin();
+
+  // std::cout << *riter << "fuck " << std::endl;
 
   // if (*citer != *riter) {
   //   cout << "success!" << endl;
   // }
 
-  // // try to create a copy
-  btree<string> btcpy2;
-  
-  btcpy2 = *strTable;
-  
-  btcpy2.printAll();
 
-  ofstream ofs1("out1");
-  ofstream ofs2("out2");
+  for (; riter != strTable->rend(); ++riter) {
+    cout << *riter << endl;
+  }
+
+
+
+  // // try to create a copy
+  // btree<string> btcpy2;
   
-  copy(strTable->begin(), strTable->end(), ostream_iterator<string>(ofs1, " "));
-  ofs1 << endl;
-  ofs1 << *strTable << endl;
+  // btcpy2 = *strTable;
+  
+  // btcpy2.printAll();
+
+  // ofstream ofs1("out1");
+  // ofstream ofs2("out2");
+  
+  // copy(strTable->begin(), strTable->end(), ostream_iterator<string>(ofs1, " "));
+  // ofs1 << endl;
+  // ofs1 << *strTable << endl;
   
   // delete strTable;
 
-  copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
-  ofs2 << endl;
-  ofs2 << btcpy2 << endl;
+  // copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
+  // ofs2 << endl;
+  // ofs2 << btcpy2 << endl;
   
-  ofs1.close();
-  ofs2.close();
+  // ofs1.close();
+  // ofs2.close();
   
 
 

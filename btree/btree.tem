@@ -52,21 +52,22 @@ template<typename T> btree<T>& btree<T>::operator=(btree<T>&& rhs) {
 }
 
 template<typename T> std::ostream& operator<<(std::ostream& os, const btree<T>& tree) {
-	vector<typename btree<T>::Node *> curr;
-	vector<typename btree<T>::Node *> next;
+	std::vector<typename btree<T>::Node *> curr;
+	std::vector<typename btree<T>::Node *> next;
 
 	curr.push_back(tree.root_);
 	while (!curr.empty()) {
 		typename vector<typename btree<T>::Node *>::const_iterator iter;
 		for (iter = curr.begin(); iter != curr.end(); ++iter) {
 			typename btree<T>::Node * n = *iter;
-			for (size_t i = 0; i < n->getMaxSize(); ++i) {
+			size_t i = 0;
+			for (i = 0; i < n->getSize(); ++i) {
 				os << n->getVal(i) << " ";
 				if (n->getChild(i) != nullptr)
 					next.push_back(n->getChild(i));
 			}
-			if (n->getChild(n->getMaxSize()) != nullptr) 
-				next.push_back(n->getChild(n->getMaxSize()));
+			if (n->getChild(i) != nullptr) 
+				next.push_back(n->getChild(i));
 		}
 		curr = next;
 		next.clear();
@@ -308,6 +309,6 @@ template<typename T> void btree<T>::printAll() const {
 
 template<typename T> typename btree<T>::iterator
 btree<T>::end() const {
-	return iterator(nullptr, 0);
+	return iterator(tail_, tail_->getSize());
 }
 
