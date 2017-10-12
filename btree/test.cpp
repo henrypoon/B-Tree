@@ -49,7 +49,17 @@ int main(void) {
   
   btree<char> cp;
   cp = *t;
-  t->printAll();
+  // t->printAll();
+  
+  ofstream ofs1("out1");
+
+  std::copy(t->begin(), t->end(), ostream_iterator<string>(ofs1, " "));
+  ofs1 << endl;
+  ofs1 << *t << endl;
+
+
+
+
   // 
   // 
   // std::cout << ('A' > 'c') << std::endl;

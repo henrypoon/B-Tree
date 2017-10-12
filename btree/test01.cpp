@@ -175,7 +175,7 @@ int main(void) {
   
   btcpy2 = *strTable;
   
-  // btcpy2.printAll();
+  btcpy2.printAll();
 
   ofstream ofs1("out1");
   ofstream ofs2("out2");
@@ -186,9 +186,9 @@ int main(void) {
   
   // delete strTable;
 
-  // copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
-  // ofs2 << endl;
-  // ofs2 << btcpy2 << endl;
+  copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
+  ofs2 << endl;
+  ofs2 << btcpy2 << endl;
   
   ofs1.close();
   ofs2.close();
