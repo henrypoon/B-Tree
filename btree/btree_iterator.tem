@@ -19,8 +19,6 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 			} else {
 				typename btree<T>::Node* temp = pointee;
 				findLastParent();
-				// std::cout << (index == -1) << std::endl;
-					// exit(1);
 				if (isEnd) {
 					pointee = temp;
 					index = pointee->getSize();

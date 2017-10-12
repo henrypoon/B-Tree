@@ -75,19 +75,6 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const btree<T>& 
 	return os;
 }
 
-template<typename T> std::ostream& btree<T>::osout(std::ostream&os, const Node* n) {
-	for (size_t i = 0; i < maxSize; ++i) {
-		os << n->getVal(i) << " ";
-	}
-	for (size_t i = 0; i < maxSize + 1; ++i) {
-		if (n->getChild(i) != nullptr) {
-			return osout(os, n->getChild(i));
-		}
-	}
-	return os;
-} 
-
-
 
 template<typename T> typename  btree<T>::Node* btree<T>::copyNode( Node* src,  Node* parent)  {
 	

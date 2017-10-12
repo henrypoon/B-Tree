@@ -203,8 +203,6 @@ private:
                     children.push_back(nullptr);
                 }
             };
-
-        // const T* getPtr(size_t idx) const {return elems.at(idx); };
         
         Node(const typename btree<T>::Node& src);
         Node(Node&& src);
@@ -213,13 +211,11 @@ private:
 
         T& getVal(size_t idx) const { return *(elems.at(idx)); }
         const size_t getSize() const { return elems.size(); }
-        const T& getChildrenSize() const { return children.size(); }
 
         const T& getLargest() const { return *(elems.back()); }
 
         Node* getChild(size_t idx) const {return children.at(idx);}
         Node* getLast() const {return children.back();}
-        const size_t getOccupied() const {return occupied; }
         const size_t getMaxSize() const {return maxSize; }
         Node* getParent() const {return parent;}
 
@@ -252,14 +248,12 @@ private:
         std::vector<Node*> children;
         Node* parent;
         size_t maxSize;
-        size_t occupied;
     };
 
     size_t maxSize;
     Node *root_, *head_, *tail_;
-    std::ostream& osout(std::ostream&os, const Node* n);
-    std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, Node* ptr);
     size_t totalSize;
+    std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, Node* ptr);
     Node* copyNode(Node* src, Node* parent);
     Node* findTail(Node* n);
     Node* findHead(Node* n);
