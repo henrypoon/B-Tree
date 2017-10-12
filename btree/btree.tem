@@ -1,9 +1,313 @@
 template<typename T>
 btree<T>::btree(size_t maxNodeElems) :
-    root_(nullptr), head_(nullptr), tail_(nullptr), maxSize(maxNodeElems),
-      totalSize(0) {}
+    maxSize(maxNodeElems), root_(nullptr), head_(nullptr), tail_(nullptr),
+    totalSize(0) {std::cout << "size is " << maxSize << std::endl;}
 
 template<typename T>
 btree<T>::~btree() {
   delete root_;
 }
+
+// copy constructor
+template<typename T>
+btree<T>::btree(const btree<T>& original) : 
+	maxSize(original.maxSize), 
+	root_(copyNode(original.root_, nullptr)), 
+	head_(findHead(root_)), 
+	tail_(findTail(root_)), 
+	totalSize(original.totalSize) {}
+
+// move constructor
+template<typename T>
+btree<T>::btree(btree<T>&& original) : 
+	maxSize(original.maxSize), 
+	root_(copyNode(original.root_, nullptr)), 
+	head_(findHead(root_)), 
+	tail_(findTail(root_)), 
+	totalSize(original.totalSize) {~original();}
+
+// copy assignment
+template<typename T> btree<T>& btree<T>::operator=(const btree<T>& rhs) {
+	if (this != &rhs) {
+		maxSize = rhs.maxSize;
+		root_ = copyNode(rhs.root_, nullptr);
+		head_ = findHead(root_);
+		tail_ = findTail(root_);
+		totalSize = rhs.totalSize;
+	}
+	return *this;
+}
+
+// move assignment
+template<typename T> btree<T>& btree<T>::operator=(btree<T>&& rhs) {
+	if (this != &rhs) {
+		maxSize = rhs.maxSize;
+		root_ = copyNode(rhs.root_, nullptr);
+		head_ = findHead(root_);
+		tail_ = findTail(root_);
+		totalSize = rhs.totalSize;
+		~rhs();
+	}
+	return *this;
+}
+
+template<typename T> std::ostream& operator<<(std::ostream& os, const btree<T>& tree) {
+	vector<typename btree<T>::Node *> curr;
+	vector<typename btree<T>::Node *> next;
+
+	curr.push_back(tree.root_);
+	while (!curr.empty()) {
+		typename vector<typename btree<T>::Node *>::const_iterator iter;
+		for (iter = curr.begin(); iter != curr.end(); ++iter) {
+			typename btree<T>::Node * n = *iter;
+			for (size_t i = 0; i < n->getMaxSize(); ++i) {
+				os << n->getVal(i) << " ";
+				if (n->getChild(i) != nullptr)
+					next.push_back(n->getChild(i));
+			}
+			if (n->getChild(n->getMaxSize()) != nullptr) 
+				next.push_back(n->getChild(n->getMaxSize()));
+		}
+		curr = next;
+		next.clear();
+	}
+	return os;
+}
+
+template<typename T> std::ostream& btree<T>::osout(std::ostream&os, const Node* n) {
+	for (size_t i = 0; i < maxSize; ++i) {
+		os << n->getVal(i) << " ";
+	}
+	for (size_t i = 0; i < maxSize + 1; ++i) {
+		if (n->getChild(i) != nullptr) {
+			return osout(os, n->getChild(i));
+		}
+	}
+	return os;
+} 
+
+
+
+template<typename T> typename  btree<T>::Node* btree<T>::copyNode( Node* src,  Node* parent)  {
+	
+	Node* n = new Node(maxSize, parent);
+	for(size_t i = 0; i < src->getSize(); ++i) {
+		n->insertVal(src->getVal(i));
+	}
+	for (size_t i = 0; i < maxSize + 1; ++i) {
+		if (src->getChild(i) != nullptr) {
+			n->insertChildAt(copyNode(src->getChild(i), n), i);
+		}
+	}
+	return n;
+}
+
+
+template<typename T> typename  btree<T>::Node* btree<T>::findTail(Node* n)  {
+	if (n -> isFull()) {
+		if (n -> getChild(maxSize) == nullptr) {
+			return n;
+		} else {
+			return findTail(n -> getChild(maxSize));
+		}
+	}
+	return n;
+}
+
+template<typename T> typename  btree<T>::Node* btree<T>::findHead(Node* n)  {
+	if (n -> isFull()) {
+		if (n -> getChild(0) == nullptr) {
+			return n;
+		} else {
+			return findHead(n -> getChild(0));
+		}
+	}
+	return n;
+}
+
+template<typename T> btree<T>::Node::Node(const Node& src) {
+	parent = src.getParent();
+	for(typename std::vector<T*>::iterator ite = src.getElems().begin(); ite != src.getElems().end(); ++ite) {
+		insertVal(**ite);
+	}
+	for (size_t i = 0; i < maxSize; ++i) {
+		if (src.getChild(i) != nullptr) {
+			children.at(i) = new Node(src.getChild(i));
+		}
+	}
+}
+
+template<typename T> btree<T>::Node::Node(Node&& src) {
+	parent = src.getParent();
+	for(typename std::vector<T*>::iterator ite = src.getElems().begin(); ite != src.getElems().end(); ++ite) {
+		insertVal(**ite);
+	}
+	for (size_t i = 0; i < maxSize; ++i) {
+		if (src.getChild(i) != nullptr) {
+			children.at(i) = new Node(src.getChild(i));
+		}
+	}
+	src.clear();
+}
+
+template<typename T> const size_t btree<T>::Node::findIndex(Node* node) const {
+	auto e = std::find_if(children.begin(), children.end(), [node] (const Node* e) {
+		return node == e;
+	});
+	return std::distance(children.begin(), e);
+}
+
+template<typename T> const std::pair<int, bool> btree<T>::Node::findInsertIndex(const T& elem) const {
+	auto e = std::find_if(elems.begin(), elems.end(), [elem] (const T* e) {
+		return elem < *e;
+	});
+	int idx = std::distance(elems.begin(), e);
+	if (idx == 0) {
+		if (*elems.at(0) == elem) {
+			return make_pair(0, true);
+		}
+	} else {
+		if (*elems.at(idx-1) == elem) {
+			return make_pair(idx, true);
+		}
+	}
+
+	return make_pair(idx, false);
+}
+
+
+
+template<typename T> const auto btree<T>::Node::findInsert(const T& elem) const {
+	typename std::vector<T* const>::iterator e = std::find_if(elems.begin(), elems.end(), [elem] (const T* e) {
+		return elem < *e;
+	});
+	// size_t idx = std::distance(elems.begin(), e);
+	return e;
+}
+
+
+template<typename T> typename btree<T>::iterator btree<T>::find(const T& elem) {
+	// btree<T>::iterator e = std::find_if(this->begin(), this->end(), [elem] (btree<T>::iterator iter) {
+	// 	return *iter == 1;
+	// });
+  	for(btree<T>::iterator iter = this->begin(); iter != this->end(); ++iter) {
+  		if (*iter == elem) {
+  			return iter;
+  		}  
+    }
+    return this->end();
+}
+
+
+
+template<typename T> typename btree<T>::const_iterator btree<T>::find(const T& elem) const {
+	// btree<T>::const_iterator e = std::find_if(this->begin(), this->end(), [elem] (btree<T>::const_iterator iter) {
+	// 	return *iter == 1;
+	// });
+  	for(btree<T>::const_iterator iter = this->cbegin(); iter != this->cend(); ++iter) {
+  		if (*iter == elem) {
+  			return iter;
+  		}  
+    }
+    return this->end();
+}
+
+
+template<typename T> typename std::pair<typename btree<T>::iterator, bool> btree<T>::insertHelper(const T& elem, Node* ptr) {
+	int idx = ptr->findInsertIndex(elem).first;
+	bool exist = ptr->findInsertIndex(elem).second;
+	
+	if (exist) {
+		--totalSize;
+		std::cout << elem << " already existed and index is " <<  idx-1 << std::endl;
+		return make_pair(iterator(ptr, idx-1), false);
+	}
+
+
+	if (!ptr->isFull()) {
+		ptr->insertValAt(ptr->findInsert(elem), elem);
+		return make_pair(iterator(ptr, idx), true);
+	} else {
+		if (ptr->getChild(idx) == nullptr) {
+			Node *n = new Node(maxSize, ptr);
+			n->insertVal(elem);
+			ptr->insertChildAt(n, idx);
+			if (elem > tail_ -> getLargest()) {
+				tail_ = n;
+			}
+			if (elem < head_ -> getVal(0)) {
+				head_ = n;
+			}
+			return make_pair(iterator(n, 0), true);
+		} else {
+			return insertHelper(elem, ptr->getChild(idx));
+		}
+	}
+}
+
+template<typename T> std::pair<typename btree<T>::iterator, bool>
+btree<T>::insert(const T& elem) {
+		// std::cout << elem << " top" << std::endl;
+	++totalSize;
+	if (root_ == nullptr) {	//empty graph
+		Node *n = new Node(maxSize);
+		head_ = n;
+		root_ = n;
+		tail_ = n;
+		root_ -> insertVal(elem);
+		return make_pair(iterator(n), true);
+	} else {
+		return insertHelper(elem, root_);
+	}
+}
+
+template<typename T> typename btree<T>::reverse_iterator
+btree<T>::rbegin() const {
+	return reverse_iterator(end());
+}
+
+template<typename T> typename btree<T>::reverse_iterator
+btree<T>::rend() const {
+	return reverse_iterator(begin());
+}
+
+template<typename T> typename btree<T>::const_iterator
+btree<T>::cbegin() const {
+	return const_iterator(begin());
+}
+
+template<typename T> typename btree<T>::const_iterator
+btree<T>::cend() const {
+	return const_iterator(end());
+}
+
+template<typename T> typename btree<T>::const_reverse_iterator
+btree<T>::crbegin() const {
+	return const_reverse_iterator(end());
+}
+
+template<typename T> typename btree<T>::const_reverse_iterator
+btree<T>::crend() const {
+	return const_reverse_iterator(begin());
+}
+
+
+template<typename T> typename btree<T>::iterator
+btree<T>::begin() const {
+	return iterator(head_, 0);
+}
+
+template<typename T> void btree<T>::printAll() const {
+  	for(btree<T>::iterator iter = this->begin(); iter != this->end(); ++iter) {
+    	cout << "node " << *iter << endl;
+    }
+    std::cout << "head is " << head_ -> getVal(0) << std::endl;
+    std::cout << "tail is " << tail_ -> getLargest() << std::endl;
+    std::cout << "size of tree is " << totalSize << std::endl;
+}
+
+template<typename T> typename btree<T>::iterator
+btree<T>::end() const {
+	return iterator(nullptr, 0);
+}
+

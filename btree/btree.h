@@ -19,21 +19,23 @@
 
 // we better include the iterator
 #include "btree_iterator.h"
+using namespace std;
 
 // we do this to avoid compiler errors about non-template friends
 // what do we do, remember? :)
-template<typename T> class btree;
+// template<typename T> class btree;
 
+template<typename T> ostream &operator<<(ostream&, const btree<T>&);
 template <typename T> 
 class btree {
 public:
   /** Hmm, need some iterator typedefs here... friends? **/
-  // friend class btree_iterator<T>;
-  // friend class const_btree_iterator<T>;
-  // typedef btree_iterator<T> iterator;
-  // typedef btree_iterator<T> const_iterator;
-  // typedef std::reverse_iterator<iterator> reverse_iterator;
-  // typedef std::reverse_iterator<const_iterator> const_reverse_iterator; 
+    friend class btree_iterator<T>;
+    friend class const_btree_iterator<T>;
+    typedef btree_iterator<T> iterator;
+    typedef btree_iterator<T> const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator; 
 
   /**
    * Constructs an empty btree.  Note that
@@ -48,7 +50,7 @@ public:
    * @param maxNodeElems the maximum number of elements
    *        that can be stored in each B-Tree node
    */
-  btree(size_t maxNodeElems = 40);
+    btree(size_t maxNodeElems = 40);
 
   /**
    * The copy constructor and  assignment operator.
@@ -65,7 +67,7 @@ public:
    *
    * @param original a const lvalue reference to a B-Tree object
    */
-  btree(const btree<T>& original);
+    btree(const btree<T>& original);
 
   /** 
    * Move constructor
@@ -73,7 +75,7 @@ public:
    *
    * @param original an rvalue reference to a B-Tree object
    */
-  btree(btree<T>&& original);
+    btree(btree<T>&& original);
   
   
   /** 
@@ -82,7 +84,7 @@ public:
    *
    * @param rhs a const lvalue reference to a B-Tree object
    */
-  btree<T>& operator=(const btree<T>& rhs);
+    btree<T>& operator=(const btree<T>& rhs);
 
   /** 
    * Move assignment
@@ -91,7 +93,7 @@ public:
    *
    * @param rhs a const reference to a B-Tree object
    */
-  btree<T>& operator=(btree<T>&& rhs);
+    btree<T>& operator=(btree<T>&& rhs);
 
   /**
    * Puts a breadth-first traversal of the B-Tree onto the output
@@ -102,7 +104,7 @@ public:
    * @param tree a const reference to a B-Tree object
    * @return a reference to os
    */
-  // friend std::ostream& operator<< <T> (std::ostream& os, const btree<T>& tree);
+  friend std::ostream& operator<< <T> (std::ostream& os, const btree<T>& tree);
 
   /**
    * The following can go here
@@ -116,14 +118,14 @@ public:
    * -- crend() 
    */
   
-  // iterator begin() const;
-  // iterator end() const;
-  // const_iterator cbegin() const;
-  // const_iterator cend() const;
-  // reverse_iterator rbegin() const;
-  // reverse_iterator rend() const;
-  // const_reverse_iterator crbegin() const;
-  // const_reverse_iterator crend() const;
+    iterator begin() const;
+    iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin() const;
+    reverse_iterator rend() const;
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
 
   /**
     * Returns an iterator to the matching element, or whatever 
@@ -139,7 +141,7 @@ public:
     * @return an iterator to the matching element, or whatever the
     *         non-const end() returns if no such match was ever found.
     */
-  // iterator find(const T& elem);
+    iterator find(const T& elem);
     
   /**
     * Identical in functionality to the non-const version of find, 
@@ -150,7 +152,7 @@ public:
     * @return an iterator to the matching element, or whatever the
     *         const end() returns if no such match was ever found.
     */
-  // const_iterator find(const T& elem) const;
+    const_iterator find(const T& elem) const;
       
   /**
     * Operation which inserts the specified element
@@ -179,29 +181,88 @@ public:
     *         stores true if and only if the element needed to be added 
     *         because no matching element was there prior to the insert call.
     */
-  // std::pair<iterator, bool> insert(const T& elem);
-
+    std::pair<iterator, bool> insert(const T& elem);
+    void printAll() const;
   /**
     * Disposes of all internal resources, which includes
     * the disposal of any client objects previously
     * inserted using the insert operation. 
     * Check that your implementation does not leak memory!
     */
-  ~btree();
+    ~btree();
+
   
-private:
+private:    
   // The details of your implementation go here
-  struct Node {
-    Node(const T& elem, const Node& n): nodePtr{std::shared_ptr<T>(elem)} {parent = n.getPtr();};
-    std::shared_ptr<T> nodePtr;
-    std::vector<std::shared_ptr<Node>> nodes;
-    std::weak_ptr<Node> parent;
+    struct Node {
+        Node(size_t _maxSize = 40, Node *parent_ = nullptr): 
+            parent(parent_),
+            maxSize(_maxSize)
+            {
+                for(size_t i=0; i < _maxSize + 1; i++) {
+                    children.push_back(nullptr);
+                }
+            };
+
+        // const T* getPtr(size_t idx) const {return elems.at(idx); };
+        
+        Node(const typename btree<T>::Node& src);
+        Node(Node&& src);
+        Node& operator=(const Node& src);
+        Node& operator=(Node&& src);
+
+        T& getVal(size_t idx) const { return *(elems.at(idx)); }
+        const size_t getSize() const { return elems.size(); }
+        const T& getChildrenSize() const { return children.size(); }
+
+        const T& getLargest() const { return *(elems.back()); }
+
+        Node* getChild(size_t idx) const {return children.at(idx);}
+        Node* getLast() const {return children.back();}
+        const size_t getOccupied() const {return occupied; }
+        const size_t getMaxSize() const {return maxSize; }
+        Node* getParent() const {return parent;}
+
+        void insertNode(size_t idx, Node* n) {children.at(idx) = n; }
+        
+        void insertVal(const T& elem) {
+            elems.push_back(new T(elem)); 
+        }
+        void insertValAt(typename std::vector<T* const>::iterator pos, const T& elem) {
+            elems.insert(pos, new T(elem));
+        }
+
+        void insertChildAt(Node* node, size_t idx) {
+            children.at(idx) = node;
+        }
+
+        const std::vector<T*> getElems() const {return elems; }
+        const std::vector<T*> getChildren() const {return children; }
+
+        const bool isFull() const {
+            return elems.size() == maxSize; 
+
+        }
+
+        const size_t findIndex(Node* node) const;
+        const auto findInsert(const T& elem) const;
+        const std::pair<int, bool> findInsertIndex(const T& elem) const;
+
+        std::vector<T*> elems;
+        std::vector<Node*> children;
+        Node* parent;
+        size_t maxSize;
+        size_t occupied;
+    };
+
     size_t maxSize;
-  };
-  
-  Node *root_, *head_, *tail_;
-  size_t maxSize;
-  size_t totalSize;
+    Node *root_, *head_, *tail_;
+    std::ostream& osout(std::ostream&os, const Node* n);
+    std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, Node* ptr);
+    size_t totalSize;
+    Node* copyNode(Node* src, Node* parent);
+    Node* findTail(Node* n);
+    Node* findHead(Node* n);
 };
 
 #include "btree.tem"

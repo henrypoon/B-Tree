@@ -121,28 +121,28 @@ int main(void) {
   btree<long> testContainer(99);
   set<long> stableContainer;
     
-  insertRandomNumbers(testContainer, stableContainer, 1000000);
+  insertRandomNumbers(testContainer, stableContainer, 2);
   btree<long> btcpy = testContainer;
   confirmEverythingMatches(btcpy, stableContainer);
 
-/***
   
   // this next portion was something I used to sort a bunch of chars
   // this was what I used to debug my iterator and made it work
- 	btree<char> astring;
-	
-	cout << "\nInserting these random chars into the tree...\n";
-	for(int i = 0; i < 10; i++) {
-	pair<btree<char>::iterator, bool> result = 
+  btree<char> astring;
+  
+  cout << "\nInserting these random chars into the tree...\n";
+  for(int i = 0; i < 10; i++) {
+  pair<btree<char>::iterator, bool> result = 
     astring.insert(static_cast<char>(getRandom('A', 'z')));
     cout << *result.first;
-	}
-	cout << endl << endl;
-		
-	for(btree<char>::iterator iter = astring.begin(); iter != astring.end(); ++iter)
-	cout << *iter;
-	cout << endl;
+  }
+  cout << endl << endl;
+    
+  for(btree<char>::iterator iter = astring.begin(); iter != astring.end(); ++iter)
+  cout << *iter;
+  cout << endl;
   
+
   // a full-scale string test of the tree using iterators
   btree<string> *strTable = new btree<string>(40);
 		
@@ -162,19 +162,21 @@ int main(void) {
   for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
     cout << *iter << endl;
 
-  // reverse iterator
-  btree<string>::reverse_iterator riter = strTable->rbegin();
-  btree<string>::const_iterator citer = strTable->begin();
+  // // reverse iterator
+  // btree<string>::reverse_iterator riter = strTable->rbegin();
+  // btree<string>::const_iterator citer = strTable->begin();
 
-  if (*citer != *riter) {
-    cout << "success!" << endl;
-  }
+  // if (*citer != *riter) {
+  //   cout << "success!" << endl;
+  // }
 
-  // try to create a copy
+  // // try to create a copy
   btree<string> btcpy2;
   
   btcpy2 = *strTable;
   
+  // btcpy2.printAll();
+
   ofstream ofs1("out1");
   ofstream ofs2("out2");
   
@@ -182,16 +184,16 @@ int main(void) {
   ofs1 << endl;
   ofs1 << *strTable << endl;
   
-  delete strTable;
+  // delete strTable;
 
-  copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
-  ofs2 << endl;
-  ofs2 << btcpy2 << endl;
+  // copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
+  // ofs2 << endl;
+  // ofs2 << btcpy2 << endl;
   
   ofs1.close();
   ofs2.close();
   
-***/
+
 
   return 0;	
 }
