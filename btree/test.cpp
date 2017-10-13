@@ -42,20 +42,35 @@ int main(void) {
   // initialise random number generator with 'random' seed
 
   // insert lots of random numbers and compare with a known correct container
-  btree<int> *t = new btree<int>(4);
-  pair<btree<int>::iterator, bool> result = t->insert(2);
+  btree<int> *t = new btree<int>(1);
+  pair<btree<int>::iterator, bool> result = t->insert(1);
   result = t->insert(3);
-  // result = t->insert(5);
+
+
+
+  result = t->insert(5);
+  result = t->insert(6);
+  result = t->insert(6);
+
+  result = t->insert(7);
+
+  result = t->insert(9);
+
+  result = t->insert(10);
+
+  std::cout << *(t->find(1)) << std::endl;
+
   // result = t->insert(6);
 
-  // t->printAll();
+  // std::cout << &t << std::endl;
+  t->printAll();
 
 
   // btree<int>::iterator a = t->end();
   //   cout << *a << " fuck you" << endl;
 
-  btree<int>::reverse_iterator b = t->rbegin();
-    cout << *b << " fuck me" << endl;
+  // btree<int>::reverse_iterator b = t->rbegin();
+  //   cout << *b << " fuck me" << endl;
 
   // for (; riter != t->rend(); ++riter) {
   // }
@@ -102,7 +117,7 @@ int main(void) {
   // astring.printAll();
   // std::cout << *(t.find(8)) << " result" << std::endl;
   // t.printAll();
-  std::cout << "\n\n\n\n" << *(result.first) << "\n\n";
+  std::cout << "\n\n\n\n" << result.second << "\n\n";
   return 0;	
 }
 

@@ -23,8 +23,7 @@ using namespace std;
 
 // we do this to avoid compiler errors about non-template friends
 // what do we do, remember? :)
-// template<typename T> class btree;
-
+template<typename T> class btree;
 template<typename T> ostream &operator<<(ostream&, const btree<T>&);
 template <typename T> 
 class btree {
@@ -195,66 +194,63 @@ public:
 private:    
   // The details of your implementation go here
     struct Node {
-        Node(size_t _maxSize = 40, Node *parent_ = nullptr): 
-            parent(parent_),
-            maxSize(_maxSize)
-            {
-                for(size_t i=0; i < _maxSize + 1; i++) {
-                    children.push_back(nullptr);
-                }
-            };
+        // Node(size_t _maxSize = 40): 
+        //     maxSize(_maxSize){};
+
+        Node(size_t _maxSize = 40, std::shared_ptr<Node> _parent = nullptr): 
+            children(_maxSize+1), parent(_parent), maxSize(_maxSize) {};
         
-        Node(const typename btree<T>::Node& src);
-        Node(Node&& src);
-        Node& operator=(const Node& src);
-        Node& operator=(Node&& src);
 
         T& getVal(size_t idx) const { return *(elems.at(idx)); }
         const size_t getSize() const { return elems.size(); }
 
         const T& getLargest() const { return *(elems.back()); }
 
-        Node* getChild(size_t idx) const {return children.at(idx);}
-        Node* getLast() const {return children.back();}
+        std::shared_ptr<Node> getChild(size_t idx) const {return children.at(idx);}
+        const std::shared_ptr<Node> getLast() const {return children.back();}
         const size_t getMaxSize() const {return maxSize; }
-        Node* getParent() const {return parent;}
+        std::shared_ptr<Node> getParent() const {return parent.lock();}
 
-        void insertNode(size_t idx, Node* n) {children.at(idx) = n; }
+        // void insertNode(size_t idx, std::shared_ptr<Node>& n) {children.at(idx) = n; }
         
         void insertVal(const T& elem) {
-            elems.push_back(new T(elem)); 
+            elems.push_back(std::make_shared<T>(elem)); 
         }
-        void insertValAt(typename std::vector<T* const>::iterator pos, const T& elem) {
-            elems.insert(pos, new T(elem));
+        void insertValAt(const typename std::vector<std::shared_ptr<T>>::iterator pos, const T& elem) {
+            elems.insert(pos, std::make_shared<T>(elem));
         }
 
-        void insertChildAt(Node* node, size_t idx) {
+        void insertChildAt(const std::shared_ptr<Node>& node, size_t idx) {
             children.at(idx) = node;
         }
 
-        const std::vector<T*> getElems() const {return elems; }
-        const std::vector<T*> getChildren() const {return children; }
+        const std::vector<std::shared_ptr<T>> getElems() const {return elems; }
+        const std::vector<std::shared_ptr<T>> getChildren() const {return children; }
 
         const bool isFull() const {
             return elems.size() == maxSize; 
 
         }
 
-        const size_t findIndex(Node* node) const;
-        const typename std::vector<T* const>::iterator findInsert(const T& elem) const;
+        void clear() noexcept;
+        const size_t findIndex(const Node* node) const;
+        const auto findInsert(const T& elem);
         const std::pair<int, bool> findInsertIndex(const T& elem) const;
 
-        std::vector<T*> elems;
-        std::vector<Node*> children;
-        Node* parent;
+        std::vector<std::shared_ptr<T>> elems;
+        std::vector<std::shared_ptr<Node>> children;
+        std::weak_ptr<Node> parent;
         size_t maxSize;
     };
 
     size_t maxSize;
-    Node *root_, *head_, *tail_;
+    std::shared_ptr<Node> root_;
+    Node *head_, *tail_;
     size_t totalSize;
-    std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, Node* ptr);
-    Node* copyNode(Node* src, Node* parent);
+    std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, const std::shared_ptr<Node>& ptr);
+    std::pair<btree<T>::Node*, size_t> findHelper(Node* node, const T& elem) const;
+    std::pair<btree<T>::Node*, size_t> findHelper(Node* node, const T& elem);
+    const std::shared_ptr<btree<T>::Node> copyNode(std::shared_ptr<Node> src, std::shared_ptr<Node> parent);
     Node* findTail(Node* n);
     Node* findHead(Node* n);
 };

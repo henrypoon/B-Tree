@@ -121,7 +121,7 @@ int main(void) {
   btree<long> testContainer(99);
   set<long> stableContainer;
     
-  insertRandomNumbers(testContainer, stableContainer, 2);
+  insertRandomNumbers(testContainer, stableContainer, 100000);
   btree<long> btcpy = testContainer;
   confirmEverythingMatches(btcpy, stableContainer);
 
@@ -143,40 +143,40 @@ int main(void) {
   cout << endl;
   
 
-  // a full-scale string test of the tree using iterators
-  btree<string> *strTable = new btree<string>(40);
+  // // a full-scale string test of the tree using iterators
+  // btree<string> *strTable = new btree<string>(40);
 		
-  ifstream wordFile("twl.txt");
-  if (!wordFile)
-    return 1;  // file couldn't be opened for some reason, abort... 
+  // ifstream wordFile("twl.txt");
+  // if (!wordFile)
+  //   return 1;  // file couldn't be opened for some reason, abort... 
   
-  while (wordFile.good()) {
-    string word;
-    getline(wordFile, word);
-    strTable->insert(word);
-  }
-  wordFile.close();
-
-  cout << "twl.txt sorted by our wonderful tree..." << endl;
-  // Such beautiful code with iterators...
-  // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
-  //   cout << *iter << endl;
-  strTable->printAll();
-
-  // reverse iterator
-  btree<string>::reverse_iterator riter = strTable->rbegin();
-  // btree<string>::const_iterator citer = strTable->begin();
-
-  // std::cout << *riter << "fuck " << std::endl;
-
-  // if (*citer != *riter) {
-  //   cout << "success!" << endl;
+  // while (wordFile.good()) {
+  //   string word;
+  //   getline(wordFile, word);
+  //   strTable->insert(word);
   // }
+  // wordFile.close();
+
+  // cout << "twl.txt sorted by our wonderful tree..." << endl;
+  // // Such beautiful code with iterators...
+  // // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
+  // //   cout << *iter << endl;
+  // strTable->printAll();
+
+  // // reverse iterator
+  // btree<string>::reverse_iterator riter = strTable->rbegin();
+  // // btree<string>::const_iterator citer = strTable->begin();
+
+  // // std::cout << *riter << "fuck " << std::endl;
+
+  // // if (*citer != *riter) {
+  // //   cout << "success!" << endl;
+  // // }
 
 
-  for (; riter != strTable->rend(); ++riter) {
-    cout << *riter << endl;
-  }
+  // for (; riter != strTable->rend(); ++riter) {
+  //   cout << *riter << endl;
+  // }
 
 
 

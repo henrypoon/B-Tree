@@ -28,9 +28,11 @@ public:
 	pointer				operator->() const { return &(operator*()); }
 	btree_iterator& 	operator++();
 	btree_iterator&		operator--();
-	bool				operator==(const btree_iterator& b) const;
-	bool				operator!=(const btree_iterator& b) const;
 	btree_iterator&		operator =(const btree_iterator& b);
+	bool				operator==(const btree_iterator& b) const;
+	bool				operator==(const const_btree_iterator<T>& b) const;
+	bool				operator!=(const btree_iterator& b) const;
+	bool				operator!=(const const_btree_iterator<T>& b) const;
 
 	btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
 
@@ -55,13 +57,15 @@ public:
 
 	friend class btree_iterator<T>;
 
-	reference			operator*() const;
-	pointer				operator->() const { return &(operator*()); }
-	const_btree_iterator& 	operator++();
+	reference					operator*() const;
+	pointer						operator->() const { return &(operator*()); }
+	const_btree_iterator& 		operator++();
 	const_btree_iterator&		operator--();
-	bool				operator==(const const_btree_iterator& b) const;
-	bool				operator!=(const const_btree_iterator& b) const;
 	const_btree_iterator&		operator =(const const_btree_iterator& b);
+	bool						operator==(const const_btree_iterator& b) const;
+	bool						operator==(const btree_iterator<T>& b) const;
+	bool						operator!=(const const_btree_iterator& b) const;
+	bool						operator!=(const btree_iterator<T>& b) const;
 
 	const_btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
 
