@@ -24,7 +24,7 @@ btree<T>::btree(btree<T>&& original) :
 	root_(copyNode(original.root_, nullptr)), 
 	head_(findHead(root_.get())), 
 	tail_(findTail(root_.get())), 
-	totalSize(original.totalSize) {~original();}
+	totalSize(original.totalSize) {original.root_=nullptr;}
 
 // copy assignment
 template<typename T> btree<T>& btree<T>::operator=(const btree<T>& rhs) {
@@ -43,10 +43,10 @@ template<typename T> btree<T>& btree<T>::operator=(btree<T>&& rhs) {
 	if (this != &rhs) {
 		maxSize = rhs.maxSize;
 		root_ = copyNode(rhs.root_, nullptr);
-		head_ = findHead(root_);
-		tail_ = findTail(root_);
+		head_ = findHead(root_.get());
+		tail_ = findTail(root_.get());
 		totalSize = rhs.totalSize;
-		~rhs();
+		rhs.root_ = nullptr;
 	}
 	return *this;
 }
@@ -379,15 +379,15 @@ btree<T>::begin() const {
 	return iterator(head_, 0);
 }
 
-template<typename T> void btree<T>::printAll() const {
-	// std::cout << root_->getChild(1)->getVal(0) << std::endl;
-  	for(btree<T>::iterator iter = this->begin(); iter != this->end(); ++iter) {
-    	cout << "node " << *iter << endl;
-    }
-    std::cout << "head is " << head_ -> getVal(0) << std::endl;
-    std::cout << "tail is " << tail_ -> getLargest() << std::endl;
-    std::cout << "size of tree is " << totalSize << std::endl;
-}
+// template<typename T> void btree<T>::printAll() const {
+// 	// std::cout << root_->getChild(1)->getVal(0) << std::endl;
+//   	for(btree<T>::iterator iter = this->begin(); iter != this->end(); ++iter) {
+//     	cout << "node " << *iter << endl;
+//     }
+//     std::cout << "head is " << head_ -> getVal(0) << std::endl;
+//     std::cout << "tail is " << tail_ -> getLargest() << std::endl;
+//     std::cout << "size of tree is " << totalSize << std::endl;
+// }
 
 template<typename T> typename btree<T>::iterator
 btree<T>::end() const {

@@ -161,7 +161,7 @@ int main(void) {
   // Such beautiful code with iterators...
   // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
   //   cout << *iter << endl;
-  strTable->printAll();
+  // strTable->printAll();
 
   // reverse iterator
   btree<string>::reverse_iterator riter = strTable->rbegin();
@@ -185,7 +185,7 @@ int main(void) {
   
   btcpy2 = *strTable;
   
-  btcpy2.printAll();
+  // btcpy2.printAll();
 
   ofstream ofs1("out1");
   ofstream ofs2("out2");

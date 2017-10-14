@@ -8,76 +8,56 @@
  * Failure to do so will result in a total mark of 0 for this deliverable.
  **/
 
-// iterator related interface stuff here; would be nice if you called your
-// iterator class btree_iterator (and possibly const_btree_iterator)
 template<typename T> class btree;
-template<typename T> class btree_iterator;
-template<typename T> class const_btree_iterator;
+template <typename Base, template <typename U> class Constness> class btree_iterator;
+// template<typename T> class const_btree_iterator;
 
-template<typename T> class btree_iterator {
+template <typename T>
+struct Identity {
+  using type = T;
+};
+
+template <typename Base, template <typename U> class Constness = Identity> class btree_iterator {
+	using T = typename Constness<Base>::type;
 public:
-	typedef std::ptrdiff_t                     difference_type;
-	typedef std::forward_iterator_tag          iterator_category;
-	typedef T                                  value_type;
-	typedef T*                                 pointer;
-	typedef T&                                 reference;
+	using difference_type = std::ptrdiff_t;
+	using iterator_category = std::bidirectional_iterator_tag;
+	using value_type = T;
+	using pointer = T*;
+	using reference = T&;
 
-	friend class const_btree_iterator<T>;
+	// friend class const_btree_iterator<T>;
 
-	reference			operator*() const;
+	reference			operator*() const { return pointee->getVal(index);};
 	pointer				operator->() const { return &(operator*()); }
 	btree_iterator& 	operator++();
 	btree_iterator&		operator--();
-	btree_iterator&		operator =(const btree_iterator& b);
+	btree_iterator	operator++(int);
+	btree_iterator	operator--(int);
+	// btree_iterator&		operator =(const btree_iterator<Base, Constness>& b);
 	bool				operator==(const btree_iterator& b) const;
-	bool				operator==(const const_btree_iterator<T>& b) const;
 	bool				operator!=(const btree_iterator& b) const;
-	bool				operator!=(const const_btree_iterator<T>& b) const;
+	operator btree_iterator<Base, std::add_const>() {
+        return btree_iterator<Base, std::add_const>{pointee, index};
+    };
+	// friend bool	operator==<>(const btree_iterator<Base, Constness>& a, const btree_iterator<Base, Constness>& b);
+	// friend bool	operator!=<>(const btree_iterator<Base, Constness>& a, const btree_iterator<Base, Constness>& b);
 
-	btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
-
-private:
-    void findFirstChild();
-    void findLastChild();
-    void findFirstParent();
-    void findLastParent();
-	typename btree<T>::Node *pointee;
-	size_t index;
-	bool isEnd;
-};
-
-
-template<typename T> class const_btree_iterator {
-public:
-	typedef std::ptrdiff_t                     difference_type;
-	typedef std::forward_iterator_tag          iterator_category;
-	typedef T                                  value_type;
-	typedef const T*                           pointer;
-	typedef const T&                           reference;
-
-	friend class btree_iterator<T>;
-
-	reference					operator*() const;
-	pointer						operator->() const { return &(operator*()); }
-	const_btree_iterator& 		operator++();
-	const_btree_iterator&		operator--();
-	const_btree_iterator&		operator =(const const_btree_iterator& b);
-	bool						operator==(const const_btree_iterator& b) const;
-	bool						operator==(const btree_iterator<T>& b) const;
-	bool						operator!=(const const_btree_iterator& b) const;
-	bool						operator!=(const btree_iterator<T>& b) const;
-
-	const_btree_iterator(typename btree<T>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
+	btree_iterator(typename btree<Base>::Node *pointee_=nullptr, size_t index_ = 0, bool _isEnd = false): pointee(pointee_), index(index_), isEnd(_isEnd) {}
 
 private:
     void findFirstChild();
     void findLastChild();
     void findFirstParent();
     void findLastParent();
-	typename btree<T>::Node *pointee;
+	typename btree<Base>::Node *pointee;
 	size_t index;
 	bool isEnd;
 };
+
+
+
+
 
 #include "btree_iterator.tem"
 

@@ -16,7 +16,9 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
-
+#include <sstream>
+#include <cassert>
+#include <type_traits>
 // we better include the iterator
 #include "btree_iterator.h"
 using namespace std;
@@ -29,12 +31,20 @@ template <typename T>
 class btree {
 public:
   /** Hmm, need some iterator typedefs here... friends? **/
-    friend class btree_iterator<T>;
-    friend class const_btree_iterator<T>;
-    typedef btree_iterator<T> iterator;
-    typedef btree_iterator<T> const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator; 
+    // friend class btree_iterator<T>;
+    // friend class const_btree_iterator<T>;
+    // typedef btree_iterator<T> iterator;
+    // typedef btree_iterator<T> const_iterator;
+    // typedef std::reverse_iterator<iterator> reverse_iterator;
+    // typedef std::reverse_iterator<const_iterator> const_reverse_iterator; 
+    using iterator = btree_iterator<T>;
+    friend iterator;
+    using const_iterator = btree_iterator<T, std::add_const>;
+    friend const_iterator;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    friend reverse_iterator;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    friend const_reverse_iterator;
 
   /**
    * Constructs an empty btree.  Note that
@@ -181,7 +191,7 @@ public:
     *         because no matching element was there prior to the insert call.
     */
     std::pair<iterator, bool> insert(const T& elem);
-    void printAll() const;
+    // void printAll() const;
     size_t getTotalSize() {return totalSize;}
   /**
     * Disposes of all internal resources, which includes

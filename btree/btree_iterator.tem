@@ -1,9 +1,11 @@
-template<typename T> typename btree_iterator<T>::reference btree_iterator<T>::operator*() const {
-	// std::cout << "index is " << index << std::endl;
-	return pointee->getVal(index);
-}
+// template <typename Base, template <typename U> class Constness>
+// typename btree_iterator<Base, Constness>::reference btree_iterator<Base, Constness>::operator*() const {
+// 	// std::cout << "index is " << index << std::endl;
+// 	return pointee->getVal(index);
+// }
 
-template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
+template <typename Base, template <typename U> class Constness>
+btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator++() {
 	if (pointee->isFull()) {
 		if (index != pointee->getSize() - 1) {
 			if (pointee->getChild(index+1) != nullptr) {
@@ -17,7 +19,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 				pointee = pointee->getChild(index + 1).get();
 				findFirstChild();
 			} else {
-				typename btree<T>::Node* temp = pointee;
+				typename btree<Base>::Node* temp = pointee;
 				findLastParent();
 				if (isEnd) {
 					pointee = temp;
@@ -29,7 +31,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 		if (index < pointee->getSize() - 1) {
 			++index;
 		} else {
-			typename btree<T>::Node* temp = pointee;
+			typename btree<Base>::Node* temp = pointee;
 			findLastParent();
 			if (isEnd) {
 				pointee = temp;
@@ -41,7 +43,8 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator++() {
 }
 
 
-template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
+template <typename Base, template <typename U> class Constness>
+btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator--() {
 	
 	if(pointee -> isFull()) {
 		if (index == 0) {
@@ -49,7 +52,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
 				pointee = pointee->getChild(0).get();
 				findLastChild();
 			} else {
-				typename btree<T>::Node* temp = pointee;
+				typename btree<Base>::Node* temp = pointee;
 				findFirstParent();
 				if (isEnd) {
 					pointee = temp;
@@ -68,7 +71,7 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
 		if (index != 0) {
 			--index;
 		} else {
-			typename btree<T>::Node* temp = pointee;
+			typename btree<Base>::Node* temp = pointee;
 			findFirstParent();
 			if (isEnd) {
 				pointee = temp;
@@ -79,7 +82,22 @@ template<typename T> btree_iterator<T>& btree_iterator<T>::operator--() {
 	return *this;
 }
 
-template<typename T> void btree_iterator<T>::findFirstParent() {
+template <typename Base, template <typename U> class Constness> 
+btree_iterator<Base, Constness> btree_iterator<Base, Constness>::operator ++(int){
+	btree_iterator r = *this;
+	operator ++();
+	return r;
+}
+
+template <typename Base, template <typename U> class Constness> 
+btree_iterator<Base, Constness> btree_iterator<Base, Constness>::operator --(int){
+	btree_iterator r = *this;
+		operator --();
+		return r;
+}
+
+template <typename Base, template <typename U> class Constness>
+void btree_iterator<Base, Constness>::findFirstParent() {
 	while (pointee->getParent().get() != nullptr) {
 		auto parent = pointee->getParent().get();
 		size_t i = parent->findIndex(pointee);
@@ -95,14 +113,16 @@ template<typename T> void btree_iterator<T>::findFirstParent() {
 
 
 
-template<typename T> void btree_iterator<T>::findFirstChild(){
+template <typename Base, template <typename U> class Constness>
+void btree_iterator<Base, Constness>::findFirstChild(){
 	while (pointee->getChild(0).get() != nullptr) {
 		pointee = pointee->getChild(0).get();
 	}
 	index = 0;
 }
 
-template<typename T> void btree_iterator<T>::findLastChild(){
+template <typename Base, template <typename U> class Constness>
+void btree_iterator<Base, Constness>::findLastChild(){
 	while (pointee->getLast().get() != nullptr) {
 		pointee = pointee->getLast().get();
 	}
@@ -110,7 +130,8 @@ template<typename T> void btree_iterator<T>::findLastChild(){
 }
 
 
-template<typename T> void btree_iterator<T>::findLastParent(){
+template <typename Base, template <typename U> class Constness>
+void btree_iterator<Base, Constness>::findLastParent(){
 	while (pointee->getParent().get() != nullptr) {
 		auto parent = pointee->getParent().get();
 		size_t i = parent->findIndex(pointee);
@@ -125,168 +146,21 @@ template<typename T> void btree_iterator<T>::findLastParent(){
 }
 
 
-template<typename T> btree_iterator<T>&
-btree_iterator<T>::operator =(const btree_iterator& b) {
-	if (this != &b) {
-		pointee = b.pointee;
-		index = b.index;
-	}
-	return *this;
-}
+// template <typename Base, template <typename U> class Constness>
+// btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator =(const btree_iterator<Base, Constness>& b) {
+// 	if (this != &b) {
+// 		pointee = b.pointee;
+// 		index = b.index;
+// 	}
+// 	return *this;
+// }
 
-template<typename T> bool
-btree_iterator<T>::operator ==(const btree_iterator<T>& b) const {
+template <typename Base, template <typename U> class Constness>
+bool btree_iterator<Base, Constness>::operator ==(const btree_iterator& b) const {
 	return (pointee == b.pointee && index == b.index);
 }
 
-template<typename T> bool
-btree_iterator<T>::operator !=(const btree_iterator<T>& b) const {
-	return !operator==(b);
-}
-
-
-
-template<typename T> typename const_btree_iterator<T>::reference const_btree_iterator<T>::operator*() const {
-	// std::cout << "index is " << index << std::endl;
-	return pointee->getVal(index);
-}
-
-template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator++() {
-	if (pointee->isFull()) {
-		if (index < pointee->getSize() - 1) {
-			if (pointee->getChild(index+1) != nullptr) {
-				pointee = pointee->getChild(index + 1).get();
-				findFirstChild();
-			} else {
-				++index;
-			}
-		} else {
-			if (pointee->getChild(index+1) != nullptr) {
-				pointee = pointee->getChild(index + 1).get();
-				findFirstChild();
-			} else {
-				typename btree<T>::Node* temp = pointee;
-				findLastParent();
-				if (isEnd) {
-					pointee = temp;
-					index = pointee->getSize();
-				}
-			}
-		}
-	} else {
-		if (index < pointee->getSize() - 1) {
-			++index;
-		} else {
-			typename btree<T>::Node* temp = pointee;
-			findLastParent();
-			if (isEnd) {
-				pointee = temp;
-				index = pointee->getSize();
-			}
-		}
-	}
-	return *this;
-}
-
-
-template<typename T> const_btree_iterator<T>& const_btree_iterator<T>::operator--() {
-	if(pointee -> isFull()) {
-		if (index == 0) {
-			if (pointee -> getChild(0).get() != nullptr) {
-				pointee = pointee->getChild(0).get();
-				findLastChild();
-			} else {
-				typename btree<T>::Node* temp = pointee;
-				findFirstParent();
-				if (isEnd) {
-					pointee = temp;
-					index = 0;
-				}
-			}
-		} else {
-			if (pointee -> getChild(index).get() != nullptr) {
-				pointee = pointee -> getChild(index).get();
-				findLastChild();
-			} else {
-				--index;
-			}
-		}
-	} else {
-		if (index != 0) {
-			--index;
-		} else {
-			typename btree<T>::Node* temp = pointee;
-			findFirstParent();
-			if (isEnd) {
-				pointee = temp;
-				index = 0;
-			}
-		}
-	}
-	return *this;
-}
-
-template<typename T> void const_btree_iterator<T>::findFirstParent() {
-	while (pointee->getParent().get() != nullptr) {
-		auto parent = pointee->getParent().get();
-		size_t i = parent->findIndex(pointee);
-		if (i != 0) {
-			pointee = parent;
-			index = i;
-			return;
-		}
-		pointee = parent;
-	}
-	isEnd = true;
-}
-
-
-template<typename T> void const_btree_iterator<T>::findFirstChild(){
-	while (pointee->getChild(0).get() != nullptr) {
-		pointee = pointee->getChild(0).get();
-	}
-	index = 0;
-}
-
-template<typename T> void const_btree_iterator<T>::findLastChild(){
-	while (pointee->getLast().get() != nullptr) {
-		pointee = pointee->getLast().get();
-	}
-	index = pointee->getSize() - 1;
-}
-
-
-template<typename T> void const_btree_iterator<T>::findLastParent(){
-	while (pointee->getParent().get() != nullptr) {
-		auto parent = pointee->getParent().get();
-		size_t i = parent->findIndex(pointee);
-		if (i != pointee->getMaxSize()) {
-			pointee = parent;
-			index = i;
-			return;
-		}
-		pointee = parent;
-	}
-	isEnd = true;
-}
-
-
-template<typename T> const_btree_iterator<T>&
-const_btree_iterator<T>::operator =(const const_btree_iterator& b) {
-	// std::cout << "ite " << pointee->getVal(0) << std::endl;
-	if (this != &b) {
-		pointee = b.pointee;
-		index = b.index;
-	}
-	return *this;
-}
-
-template<typename T> bool
-const_btree_iterator<T>::operator ==(const const_btree_iterator<T>& b) const {
-	return (pointee == b.pointee && index == b.index);
-}
-
-template<typename T> bool
-const_btree_iterator<T>::operator !=(const const_btree_iterator<T>& b) const {
+template <typename Base, template <typename U> class Constness>
+bool btree_iterator<Base, Constness>::operator !=(const btree_iterator& b) const {
 	return !operator==(b);
 }
