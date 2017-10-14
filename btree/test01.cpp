@@ -96,6 +96,8 @@ bool confirmEverythingMatches(const btree<long>& testContainer, const set<long>&
     bool foundInTree = (testContainer.find(i) != testContainer.end());
     bool foundInSet = (stableContainer.find(i) != stableContainer.end());
     if (foundInTree != foundInSet) {
+      testContainer.printAll();
+      std::cout << stableContainer.size() << std::endl; 
       cout << "- btree and set don't contain the same data!" << endl; 
       cout << "Mismatch at element: " << i << endl;
       return false;
@@ -121,9 +123,10 @@ int main(void) {
   btree<long> testContainer(99);
   set<long> stableContainer;
     
-  insertRandomNumbers(testContainer, stableContainer, 20);
+  insertRandomNumbers(testContainer, stableContainer, 1000000);
   btree<long> btcpy = testContainer;
   confirmEverythingMatches(btcpy, stableContainer);
+
 
   
   // this next portion was something I used to sort a bunch of chars
@@ -142,10 +145,9 @@ int main(void) {
   cout << *iter;
   cout << endl;
   
-
   // a full-scale string test of the tree using iterators
   btree<string> *strTable = new btree<string>(40);
-		
+    
   ifstream wordFile("twl.txt");
   if (!wordFile)
     return 1;  // file couldn't be opened for some reason, abort... 
@@ -159,34 +161,22 @@ int main(void) {
 
   cout << "twl.txt sorted by our wonderful tree..." << endl;
   // Such beautiful code with iterators...
-  // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
-  //   cout << *iter << endl;
-  // strTable->printAll();
+  for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
+    cout << *iter << endl;
 
   // reverse iterator
   btree<string>::reverse_iterator riter = strTable->rbegin();
-  // btree<string>::const_iterator citer = strTable->begin();
+  btree<string>::const_iterator citer = strTable->begin();
 
-  // std::cout << *riter << "fuck " << std::endl;
-
-  // if (*citer != *riter) {
-  //   cout << "success!" << endl;
-  // }
-
-
-  for (; riter != strTable->rend(); ++riter) {
-    cout << *riter << endl;
+  if (*citer != *riter) {
+    cout << "success!" << endl;
   }
-
-
 
   // try to create a copy
   btree<string> btcpy2;
   
   btcpy2 = *strTable;
   
-  // btcpy2.printAll();
-
   ofstream ofs1("out1");
   ofstream ofs2("out2");
   
@@ -204,7 +194,6 @@ int main(void) {
   ofs2.close();
   
 
-
-  return 0;	
+  return 0; 
 }
 

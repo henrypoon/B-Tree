@@ -45,7 +45,11 @@ btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator++() {
 
 template <typename Base, template <typename U> class Constness>
 btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator--() {
-	
+	// std::cout << "index  " << index << std::endl;
+	if (index == pointee->getSize()) {
+		--index;
+		return *this;
+	}
 	if(pointee -> isFull()) {
 		if (index == 0) {
 			if (pointee -> getChild(0) != nullptr) {
@@ -68,6 +72,7 @@ btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator--() {
 			}
 		}
 	} else {
+
 		if (index != 0) {
 			--index;
 		} else {
@@ -102,8 +107,9 @@ void btree_iterator<Base, Constness>::findFirstParent() {
 		auto parent = pointee->getParent().get();
 		size_t i = parent->findIndex(pointee);
 		if (i != 0) {
+	// std::cout << parent->getVal(0) << "fuck" << std::endl;
 			pointee = parent;
-			index = i;
+			index = i - 1;
 			return;
 		}
 		pointee = parent;
