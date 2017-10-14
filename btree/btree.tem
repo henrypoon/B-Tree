@@ -86,26 +86,6 @@ template<typename T> std::ostream& operator<<(std::ostream& os, const btree<T>& 
 	return os;
 }
 
-template<typename T> std::ostream& operator<<(std::ostream& os, btree<T>& tree) {
-	std::queue<typename btree<T>::Node*> q;
-	q.push(tree.root_.get());
-	while (!q.empty()) {
-		typename btree<T>::Node* n = q.front();
-		q.pop();
-		auto v = n-> getElems();
-		for (auto vite = v.begin(); vite != v.end(); ++vite) {
-			os << *vite << " ";
-		}
-		auto c = n->getChildren();
-		for (auto cite = c.begin(); cite != c.end(); ++cite) {
-			if ((*cite) != nullptr) {
-				q.push((*cite).get());
-			}
-		}
-	}
-	return os;
-}
-
 template<typename T> const typename std::shared_ptr<typename btree<T>::Node> btree<T>::copyNode(std::shared_ptr<Node> src,  std::shared_ptr<Node> parent)  {
 	std::shared_ptr<Node> n = std::make_shared<Node>(Node{maxSize, parent});
 	for(size_t i = 0; i < src->getSize(); ++i) {

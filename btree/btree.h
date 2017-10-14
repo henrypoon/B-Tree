@@ -28,7 +28,7 @@ using namespace std;
 // what do we do, remember? :)
 template<typename T> class btree;
 template<typename T> ostream &operator<<(ostream&, const btree<T>&);
-template<typename T> ostream &operator<<(ostream&, btree<T>&);
+// template<typename T> ostream &operator<<(ostream&, btree<T>&);
 
 template <typename T> 
 class btree {
