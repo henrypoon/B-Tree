@@ -28,18 +28,11 @@ using namespace std;
 // what do we do, remember? :)
 template<typename T> class btree;
 template<typename T> ostream &operator<<(ostream&, const btree<T>&);
-// template<typename T> ostream &operator<<(ostream&, btree<T>&);
 
 template <typename T> 
 class btree {
 public:
   /** Hmm, need some iterator typedefs here... friends? **/
-    // friend class btree_iterator<T>;
-    // friend class const_btree_iterator<T>;
-    // typedef btree_iterator<T> iterator;
-    // typedef btree_iterator<T> const_iterator;
-    // typedef std::reverse_iterator<iterator> reverse_iterator;
-    // typedef std::reverse_iterator<const_iterator> const_reverse_iterator; 
     using iterator = btree_iterator<T>;
     friend iterator;
     using const_iterator = btree_iterator<T, std::add_const>;
@@ -117,7 +110,6 @@ public:
    * @return a reference to os
    */
   friend std::ostream& operator<< <T> (std::ostream& os, const btree<T>& tree);
-  friend std::ostream& operator<< <T> (std::ostream& os, btree<T>& tree);
 
 
   /**
@@ -196,8 +188,6 @@ public:
     *         because no matching element was there prior to the insert call.
     */
     std::pair<iterator, bool> insert(const T& elem);
-    void printAll() const;
-    size_t getTotalSize() {return totalSize;}
   /**
     * Disposes of all internal resources, which includes
     * the disposal of any client objects previously
@@ -210,45 +200,10 @@ public:
 private:    
   // The details of your implementation go here
     struct Node {
-        // Node(size_t _maxSize = 40): 
-        //     maxSize(_maxSize){};
-
         Node(size_t _maxSize = 40, std::shared_ptr<Node> _parent = nullptr): 
             children(_maxSize+1), parent(_parent), maxSize(_maxSize) {};
         
-
-        T& getVal(size_t idx) { return elems.at(idx); }
-        const size_t getSize() const { return elems.size(); }
-
-        const T& getLargest() const { return elems.back(); }
-
-        std::shared_ptr<Node> getChild(size_t idx) const {return children.at(idx);}
-        const std::shared_ptr<Node> getLast() const {return children.back();}
-        const size_t getMaxSize() const {return maxSize; }
-        std::shared_ptr<Node> getParent() const {return parent.lock();}
-
-        // void insertNode(size_t idx, std::shared_ptr<Node>& n) {children.at(idx) = n; }
-
-        void insertVal(const T& elem) {
-            elems.push_back(elem); 
-        }
-        void insertValAt(const typename std::vector<T>::iterator pos, const T& elem) {
-            elems.insert(pos, elem);
-        }
-
-        void insertChildAt(const std::shared_ptr<Node>& node, size_t idx) {
-            children.at(idx) = node;
-        }
-
-        const std::vector<T> getElems() const {return elems; }
-        const std::vector<std::shared_ptr<Node>> getChildren() const {return children; }
-
-        const bool isFull() const {
-            return elems.size() == maxSize; 
-
-        }
-
-        void clear() noexcept;
+        const bool isFull() const { return elems.size() == maxSize; }
         const size_t findIndex(const Node* node) const;
         const auto findInsert(const T& elem);
         const std::pair<int, bool> findInsertIndex(const T& elem) const;
@@ -262,7 +217,7 @@ private:
     size_t maxSize;
     std::shared_ptr<Node> root_;
     Node *head_, *tail_;
-    size_t totalSize;
+
     std::pair<typename btree<T>::iterator, bool> insertHelper(const T& elem, const std::shared_ptr<Node>& ptr);
     btree<T>::const_iterator findHelper(Node* node, const T& elem) const;
     btree<T>::iterator findHelper(Node* node, const T& elem);
@@ -271,6 +226,297 @@ private:
     Node* findHead(Node* n);
 };
 
-#include "btree.tem"
+// default constructor
+template<typename T>
+btree<T>::btree(size_t maxNodeElems ) :
+    maxSize(maxNodeElems), root_(nullptr),head_(nullptr), tail_(nullptr) {
+        std::shared_ptr<Node> n = std::make_shared<Node>(Node{maxSize});
+        root_ = n;
+        head_ = n.get();
+        tail_ = n.get();
+    }
+
+// desctructor
+template<typename T>
+btree<T>::~btree() {
+  root_.reset();
+}
+
+// copy constructor
+template<typename T>
+btree<T>::btree(const btree<T>& original) : 
+    maxSize(original.maxSize), 
+    root_(copyNode(original.root_, nullptr)), 
+    head_(findHead(root_.get())), 
+    tail_(findTail(root_.get())) {
+    }
+
+// move constructor
+template<typename T>
+btree<T>::btree(btree<T>&& original) : 
+    maxSize(original.maxSize), 
+    root_(copyNode(original.root_, nullptr)), 
+    head_(findHead(root_.get())), 
+    tail_(findTail(root_.get())) {
+        original.root_=nullptr;
+        original.head_=nullptr;
+        original.tail_=nullptr;
+    }
+
+// copy assignment
+template<typename T> btree<T>& btree<T>::operator=(const btree<T>& rhs) {
+    if (this != &rhs) {
+        maxSize = rhs.maxSize;
+        root_ = copyNode(rhs.root_, nullptr);
+        head_ = findHead(root_.get());
+        tail_ = findTail(root_.get());
+    }
+    return *this;
+}
+
+// move assignment
+template<typename T> btree<T>& btree<T>::operator=(btree<T>&& rhs) {
+    if (this != &rhs) {
+        maxSize = rhs.maxSize;
+        root_ = copyNode(rhs.root_, nullptr);
+        head_ = findHead(root_.get());
+        tail_ = findTail(root_.get());
+        std::shared_ptr<Node> n = std::make_shared<Node>(Node{maxSize});
+        rhs.root_ = n;
+        rhs.head_ = n.get();
+        rhs.tail_ = n.get();
+    }
+    return *this;
+}
+
+// output ostream
+template<typename T> std::ostream& operator<<(std::ostream& os, const btree<T>& tree) {
+    std::queue<typename btree<T>::Node*> q;
+    q.push(tree.root_.get());
+    while (!q.empty()) {
+        typename btree<T>::Node* n = q.front();
+        q.pop();
+        auto v = n-> elems;
+        for (auto vite = v.begin(); vite != v.end(); ++vite) {
+            os << *vite << " ";
+        }
+        auto c = n->children;
+        for (auto cite = c.begin(); cite != c.end(); ++cite) {
+            if ((*cite) != nullptr) {
+                q.push((*cite).get());
+            }
+        }
+    }
+    return os;
+}
+
+// deep copy all nodes of a tree recursively
+template<typename T> const typename std::shared_ptr<typename btree<T>::Node> btree<T>::copyNode(std::shared_ptr<Node> src,  std::shared_ptr<Node> parent)  {
+    std::shared_ptr<Node> n = std::make_shared<Node>(Node{maxSize, parent});
+    for(size_t i = 0; i < src->elems.size(); ++i) {
+        n->elems.push_back(src->elems.at(i));
+    }
+    for (size_t i = 0; i < maxSize + 1; ++i) {
+        if (src->children.at(i) != nullptr) {
+            n->children.at(i) = copyNode(src->children.at(i), n);
+        }
+    }
+    return n;
+}
+
+// find the head of a tree
+template<typename T> typename btree<T>::Node* btree<T>::findHead(Node* n) {
+    if (n -> isFull()) {
+        if (n -> children.at(0) == nullptr) {
+            return n;
+        } else {
+            return findHead(n->children.at(0).get());
+        }
+    }
+    return n;
+}
+
+// find a tail of a tree
+template<typename T> typename btree<T>::Node* btree<T>::findTail(Node* n) {
+    if (n->isFull()) {
+        if (n->children.at(maxSize) == nullptr) {
+            return n;
+        } else {
+            return findTail(n->children.at(maxSize).get());
+        }
+    }
+    return n;
+}
+
+// find the index of a child in a node
+template<typename T> const size_t btree<T>::Node::findIndex(const Node* node) const {
+    auto e = std::find_if(children.begin(), children.end(), [node] (auto e) {
+        return node == e.get();
+    });
+    return std::distance(children.begin(), e);
+}
+
+// find the index in value vector that would add in, return index and whether already existed
+template<typename T> const std::pair<int, bool> btree<T>::Node::findInsertIndex(const T& elem) const {
+    auto e = std::find_if(elems.begin(), elems.end(), [elem] (auto e) {
+        return elem < e;
+    });
+    int idx = std::distance(elems.begin(), e);
+    if (idx == 0) {
+        if (elems.at(0) == elem) {
+            return make_pair(0, true);
+        }
+    } else {
+        if (elems.at(idx-1) == elem) {
+            return make_pair(idx, true);
+        }
+    }
+    return make_pair(idx, false);
+}
+
+// find the index in value vector that would add in, return iterator
+template<typename T>
+const auto btree<T>::Node::findInsert(const T& elem) {
+    auto e = std::find_if(elems.begin(), elems.end(), [elem] (auto e) {
+        return elem < e;
+    });
+    return e;
+}
+
+// non-const of find
+template<typename T> typename btree<T>::iterator btree<T>::find(const T& elem) {
+    return findHelper(root_.get(), elem);
+}
+
+// recursively find the iterator of a target
+template<typename T> typename btree<T>::iterator btree<T>::findHelper(Node* node, const T& elem) {
+    auto v = node->elems;
+    auto first = std::lower_bound(v.begin(), v.end(), elem);
+    size_t idx = std::distance(v.begin(), first); 
+    if (first == v.end()) {
+        if (node->children.back() != nullptr) {
+            return findHelper(node->children.back().get(), elem);
+        } else {
+            return this->end();
+        }
+    } else {
+        if (*first == elem) {
+            return iterator(node, idx);
+        } else {
+            if (node->children.at(idx) != nullptr) {
+                return findHelper(node->children.at(idx).get(), elem);
+            }
+            return this->end();
+        }
+    }
+}
+
+// recursively find the iterator of a target
+template<typename T> typename btree<T>::const_iterator btree<T>::findHelper(Node* node, const T& elem) const {
+    auto v = node->elems;
+    auto first = std::lower_bound(v.begin(), v.end(), elem);
+    size_t idx = std::distance(v.begin(), first); 
+    if (first == v.end()) {                         //elem is greater any elements in this level
+        if (node -> children.back() != nullptr) {           //go to next level to find
+            return findHelper(node->children.back().get(), elem);
+        } else {                //no result
+            return this->cend();
+        }
+    } else {
+        if (*first == elem) {       //find it!
+            return const_iterator(node, idx);
+        } else {                //to see whether no result of go to next level
+            if (node->children.at(idx) != nullptr) {
+                return findHelper(node->children.at(idx).get(), elem);
+            }
+            return this->cend();
+        }
+    }
+}
+
+// const version of find
+template<typename T> typename btree<T>::const_iterator btree<T>::find(const T& elem) const {
+    return findHelper(root_.get(), elem);
+}
+
+// insert the child in correct place in recursion
+template<typename T> typename std::pair<typename btree<T>::iterator, bool> btree<T>::insertHelper(const T& elem, const std::shared_ptr<Node>& ptr) {
+    int idx = ptr->findInsertIndex(elem).first;
+    bool exist = ptr->findInsertIndex(elem).second;
+
+    if (exist) {            //if elem is already existed
+        return make_pair(iterator(ptr.get(), idx-1), false);
+    }
+
+    if (!ptr->isFull()) {           //not full yet, available to add in current level
+        ptr->elems.insert(ptr->findInsert(elem), elem);
+        return make_pair(iterator(ptr.get(), idx), true);
+    } else {
+        if (ptr->children.at(idx) == nullptr) {             // create a new child
+            std::shared_ptr<Node> n = std::make_shared<Node>(Node{maxSize, ptr});
+            n->elems.push_back(elem);
+            ptr->children.at(idx) = n;
+            if (elem > tail_->elems.back()) {
+                tail_ = n.get();
+            }
+            if (elem < head_->elems.at(0)) {
+                head_ = n.get();
+            }
+            return make_pair(iterator(n.get(), 0), true);
+        } else {        //keep going for search
+            return insertHelper(elem, ptr->children.at(idx));
+        }
+    }
+}
+
+template<typename T> std::pair<typename btree<T>::iterator, bool>
+btree<T>::insert(const T& elem) {
+        if (root_->elems.size() == 0) {     //if it's empty tree
+            root_->elems.push_back(elem);
+            return make_pair(iterator(root_.get()), true);
+        }
+        auto e = insertHelper(elem, root_);
+        return e;
+}
+//iterator
+template<typename T> typename btree<T>::reverse_iterator
+btree<T>::rbegin() const {
+    return reverse_iterator(end());
+}
+
+template<typename T> typename btree<T>::reverse_iterator
+btree<T>::rend() const {
+    return reverse_iterator(begin());
+}
+
+template<typename T> typename btree<T>::const_iterator
+btree<T>::cbegin() const {
+    return const_iterator(begin());
+}
+
+template<typename T> typename btree<T>::const_iterator
+btree<T>::cend() const {
+    return const_iterator(end());
+}
+
+template<typename T> typename btree<T>::const_reverse_iterator
+btree<T>::crbegin() const {
+    return const_reverse_iterator(end());
+}
+
+template<typename T> typename btree<T>::const_reverse_iterator
+btree<T>::crend() const {
+    return const_reverse_iterator(begin());
+}
+
+template<typename T> typename btree<T>::iterator
+btree<T>::begin() const {
+    return iterator(head_, 0);
+}
+
+template<typename T> typename btree<T>::iterator
+btree<T>::end() const {
+    return iterator(tail_, tail_->elems.size());
+}
 
 #endif

@@ -96,8 +96,6 @@ bool confirmEverythingMatches(const btree<long>& testContainer, const set<long>&
     bool foundInTree = (testContainer.find(i) != testContainer.end());
     bool foundInSet = (stableContainer.find(i) != stableContainer.end());
     if (foundInTree != foundInSet) {
-      testContainer.printAll();
-      std::cout << stableContainer.size() << std::endl; 
       cout << "- btree and set don't contain the same data!" << endl; 
       cout << "Mismatch at element: " << i << endl;
       return false;
@@ -127,7 +125,7 @@ int main(void) {
   btree<long> btcpy = testContainer;
   confirmEverythingMatches(btcpy, stableContainer);
 
-
+/***
   
   // this next portion was something I used to sort a bunch of chars
   // this was what I used to debug my iterator and made it work
@@ -193,6 +191,7 @@ int main(void) {
   ofs1.close();
   ofs2.close();
   
+***/
 
   return 0; 
 }
