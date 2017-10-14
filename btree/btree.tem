@@ -156,18 +156,65 @@ template<typename T> typename btree<T>::iterator btree<T>::find(const T& elem) {
     if (elem == result.first->getVal(result.second)) {
     	return iterator(result.first, result.second);
     }
-    return iterator(tail_, tail_->getSize()-1);
+    return this->end();
 }
 
 template<typename T> std::pair<typename btree<T>::Node*, size_t> btree<T>::findHelper(Node* node, const T& elem) {
 	for (size_t i = 0; i < node->getSize(); ++i) {
-		if (elem == node->getVal(i)) {
-			return make_pair(node, i);
-		} else if (elem > node->getVal(i)) {
-			if (node -> getChild(i+1) != nullptr) {
-				return findHelper(node->getChild(i+1).get(), elem);
+		if (i == 0) {
+			if (node -> getSize() == 1) {
+				if (elem == node->getVal(0)) {
+					return make_pair(node, 0);
+				} else if (elem < node->getVal(0)){
+					if (node -> getChild(0) != nullptr) {
+						return findHelper(node->getChild(0).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}
+				} else {
+					if (node -> getChild(1) != nullptr) {
+						return findHelper(node->getChild(1).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}			
+				}
 			} else {
-				return make_pair(node, node->getSize() - 1);
+				if (elem == node->getVal(0)) {
+					return make_pair(node, 0);
+				} else if (elem < node->getVal(0)){
+					if (node -> getChild(0) != nullptr) {
+						return findHelper(node->getChild(0).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}
+				}				
+			}
+		} else if (i == node->getSize() - 1) {
+			if (elem == node->getVal(i)) {
+				return make_pair(node, i);
+			} else if (elem > node -> getVal(i)){
+				if (node -> getLast().get() != nullptr) {
+					return findHelper(node -> getLast().get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
+			} else {
+			// std::cout << "fucl" << node->getVal(i) << std::endl;
+				if (node -> getChild(i) != nullptr) {
+					return findHelper(node->getChild(i).get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
+			}
+		} else {
+			if (elem == node->getVal(i)) {
+				return make_pair(node, i);
+			} else if (elem < node->getVal(i)) {
+				if (node -> getChild(i) != nullptr) {
+					return findHelper(node->getChild(i).get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
 			}
 		}
 	}
@@ -176,13 +223,60 @@ template<typename T> std::pair<typename btree<T>::Node*, size_t> btree<T>::findH
 
 template<typename T> std::pair<typename btree<T>::Node*, size_t> btree<T>::findHelper(Node* node, const T& elem) const {
 	for (size_t i = 0; i < node->getSize(); ++i) {
-		if (elem == node->getVal(i)) {
-			return make_pair(node, i);
-		} else if (elem > node->getVal(i)) {
-			if (node -> getChild(i+1) != nullptr) {
-				return findHelper(node->getChild(i+1).get(), elem);
+		if (i == 0) {
+			if (node -> getSize() == 1) {
+				if (elem == node->getVal(0)) {
+					return make_pair(node, 0);
+				} else if (elem < node->getVal(0)){
+					if (node -> getChild(0) != nullptr) {
+						return findHelper(node->getChild(0).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}
+				} else {
+					if (node -> getChild(1) != nullptr) {
+						return findHelper(node->getChild(1).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}			
+				}
 			} else {
-				return make_pair(node, node->getSize() - 1);
+				if (elem == node->getVal(0)) {
+					return make_pair(node, 0);
+				} else if (elem < node->getVal(0)){
+					if (node -> getChild(0) != nullptr) {
+						return findHelper(node->getChild(0).get(), elem);
+					} else {
+						return make_pair(node, 0);
+					}
+				}				
+			}
+		} else if (i == node->getSize() - 1) {
+			if (elem == node->getVal(i)) {
+				return make_pair(node, i);
+			} else if (elem > node -> getVal(i)){
+				if (node -> getLast().get() != nullptr) {
+					return findHelper(node -> getLast().get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
+			} else {
+			// std::cout << "fucl" << node->getVal(i) << std::endl;
+				if (node -> getChild(i) != nullptr) {
+					return findHelper(node->getChild(i).get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
+			}
+		} else {
+			if (elem == node->getVal(i)) {
+				return make_pair(node, i);
+			} else if (elem < node->getVal(i)) {
+				if (node -> getChild(i) != nullptr) {
+					return findHelper(node->getChild(i).get(), elem);
+				} else {
+					return make_pair(node, i);
+				}
 			}
 		}
 	}
@@ -194,7 +288,7 @@ template<typename T> typename btree<T>::const_iterator btree<T>::find(const T& e
     if (elem == result.first->getVal(result.second)) {
     	return iterator(result.first, result.second);
     }
-    return const_iterator(tail_, tail_->getSize()-1);
+    return this->cend();
 }
 
 

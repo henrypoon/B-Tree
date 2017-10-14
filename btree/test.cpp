@@ -42,23 +42,28 @@ int main(void) {
   // initialise random number generator with 'random' seed
 
   // insert lots of random numbers and compare with a known correct container
-  btree<int> *t = new btree<int>(1);
+  btree<int> *t = new btree<int>(3);
   pair<btree<int>::iterator, bool> result = t->insert(1);
+  result = t->insert(11);
   result = t->insert(3);
 
 
 
-  result = t->insert(5);
+
+  // result = t->insert(5);
   result = t->insert(6);
-  result = t->insert(6);
+  // result = t->insert(10);
 
-  result = t->insert(7);
+  // result = t->insert(7);
 
-  result = t->insert(9);
+  // result = t->insert(6);
+  // result = t->insert(9);
 
-  result = t->insert(10);
+  // t->printAll();
+  int a = 6;
 
-  std::cout << *(t->find(1)) << std::endl;
+  std::cout << "is end " << (t->find(a) == t->end()) << std::endl;
+  std::cout << *(t->find(a)) << std::endl;
 
   // result = t->insert(6);
 

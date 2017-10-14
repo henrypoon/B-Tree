@@ -121,7 +121,7 @@ int main(void) {
   btree<long> testContainer(99);
   set<long> stableContainer;
     
-  insertRandomNumbers(testContainer, stableContainer, 100000);
+  insertRandomNumbers(testContainer, stableContainer, 20);
   btree<long> btcpy = testContainer;
   confirmEverythingMatches(btcpy, stableContainer);
 
@@ -143,65 +143,65 @@ int main(void) {
   cout << endl;
   
 
-  // // a full-scale string test of the tree using iterators
-  // btree<string> *strTable = new btree<string>(40);
+  // a full-scale string test of the tree using iterators
+  btree<string> *strTable = new btree<string>(40);
 		
-  // ifstream wordFile("twl.txt");
-  // if (!wordFile)
-  //   return 1;  // file couldn't be opened for some reason, abort... 
+  ifstream wordFile("twl.txt");
+  if (!wordFile)
+    return 1;  // file couldn't be opened for some reason, abort... 
   
-  // while (wordFile.good()) {
-  //   string word;
-  //   getline(wordFile, word);
-  //   strTable->insert(word);
-  // }
-  // wordFile.close();
+  while (wordFile.good()) {
+    string word;
+    getline(wordFile, word);
+    strTable->insert(word);
+  }
+  wordFile.close();
 
-  // cout << "twl.txt sorted by our wonderful tree..." << endl;
-  // // Such beautiful code with iterators...
-  // // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
-  // //   cout << *iter << endl;
-  // strTable->printAll();
+  cout << "twl.txt sorted by our wonderful tree..." << endl;
+  // Such beautiful code with iterators...
+  // for(btree<string>::const_iterator iter = strTable->begin(); iter != strTable->end(); ++iter)
+  //   cout << *iter << endl;
+  strTable->printAll();
 
-  // // reverse iterator
-  // btree<string>::reverse_iterator riter = strTable->rbegin();
-  // // btree<string>::const_iterator citer = strTable->begin();
+  // reverse iterator
+  btree<string>::reverse_iterator riter = strTable->rbegin();
+  // btree<string>::const_iterator citer = strTable->begin();
 
-  // // std::cout << *riter << "fuck " << std::endl;
+  // std::cout << *riter << "fuck " << std::endl;
 
-  // // if (*citer != *riter) {
-  // //   cout << "success!" << endl;
-  // // }
-
-
-  // for (; riter != strTable->rend(); ++riter) {
-  //   cout << *riter << endl;
+  // if (*citer != *riter) {
+  //   cout << "success!" << endl;
   // }
 
 
+  for (; riter != strTable->rend(); ++riter) {
+    cout << *riter << endl;
+  }
 
-  // // try to create a copy
-  // btree<string> btcpy2;
-  
-  // btcpy2 = *strTable;
-  
-  // btcpy2.printAll();
 
-  // ofstream ofs1("out1");
-  // ofstream ofs2("out2");
-  
-  // copy(strTable->begin(), strTable->end(), ostream_iterator<string>(ofs1, " "));
-  // ofs1 << endl;
-  // ofs1 << *strTable << endl;
-  
-  // delete strTable;
 
-  // copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
-  // ofs2 << endl;
-  // ofs2 << btcpy2 << endl;
+  // try to create a copy
+  btree<string> btcpy2;
   
-  // ofs1.close();
-  // ofs2.close();
+  btcpy2 = *strTable;
+  
+  btcpy2.printAll();
+
+  ofstream ofs1("out1");
+  ofstream ofs2("out2");
+  
+  copy(strTable->begin(), strTable->end(), ostream_iterator<string>(ofs1, " "));
+  ofs1 << endl;
+  ofs1 << *strTable << endl;
+  
+  delete strTable;
+
+  copy(btcpy2.begin(), btcpy2.end(), ostream_iterator<string>(ofs2, " "));
+  ofs2 << endl;
+  ofs2 << btcpy2 << endl;
+  
+  ofs1.close();
+  ofs2.close();
   
 
 

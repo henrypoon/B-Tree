@@ -182,6 +182,7 @@ public:
     */
     std::pair<iterator, bool> insert(const T& elem);
     void printAll() const;
+    size_t getTotalSize() {return totalSize;}
   /**
     * Disposes of all internal resources, which includes
     * the disposal of any client objects previously
@@ -212,7 +213,7 @@ private:
         std::shared_ptr<Node> getParent() const {return parent.lock();}
 
         // void insertNode(size_t idx, std::shared_ptr<Node>& n) {children.at(idx) = n; }
-        
+
         void insertVal(const T& elem) {
             elems.push_back(std::make_shared<T>(elem)); 
         }
