@@ -41,47 +41,32 @@ public:
 private:
     void findNextChild();
     void findLastChild();
-    void findNextParent();
     void findLastParent();
+    void findNextParent();
 	typename btree<Base>::Node *pointee;		//pointer of current node
 	size_t index;			//current index
-	bool isEnd;		//whether reach the last one
+	bool isEnd;		//flag for knowing whether is the end
 };
 
 // pre increment
 template <typename Base, template <typename U> class Constness>
 btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator++() {
-	if (pointee->isFull()) {
-		if (index != pointee->elems.size() - 1) {
-			if (pointee->children.at(index+1) != nullptr) {
-				pointee = pointee->children.at(index + 1).get();
-				findNextChild();
-			} else {
-				++index;
-			}
-		} else {
-			if (pointee->children.at(index+1) != nullptr) {
-				pointee = pointee->children.at(index + 1).get();
-				findNextChild();
-			} else {
-				typename btree<Base>::Node* temp = pointee;
-				findLastParent();
-				if (isEnd) {
-					pointee = temp;
-					index = pointee->elems.size();
-				}
-			}
-		}
+	if (pointee->children.at(index + 1) != nullptr) {
+		pointee = pointee->children.at(index + 1).get();
+		findNextChild();
+		return *this;
 	} else {
-		if (index < pointee->elems.size() - 1) {
-			++index;
-		} else {
+		if (index == pointee->elems.size() - 1) {
 			typename btree<Base>::Node* temp = pointee;
-			findLastParent();
+			findNextParent();
 			if (isEnd) {
 				pointee = temp;
 				index = pointee->elems.size();
 			}
+			return *this;
+		} else {
+			++index;
+			return *this;
 		}
 	}
 	return *this;
@@ -90,41 +75,22 @@ btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator++() {
 // pre decrement
 template <typename Base, template <typename U> class Constness>
 btree_iterator<Base, Constness>& btree_iterator<Base, Constness>::operator--() {
-	if (index == pointee->elems.size()) {
-		--index;
+	if (pointee->children.at(index) != nullptr) {
+		pointee = pointee->children.at(index).get();
+		findLastChild();
 		return *this;
-	}
-	if(pointee -> isFull()) {
-		if (index == 0) {
-			if (pointee -> children.at(0) != nullptr) {
-				pointee = pointee->children.at(0).get();
-				findLastChild();
-			} else {
-				typename btree<Base>::Node* temp = pointee;
-				findNextParent();
-				if (isEnd) {
-					pointee = temp;
-					index = 0;
-				}
-			}
-		} else {
-			if (pointee -> children.at(index) != nullptr) {
-				pointee = pointee -> children.at(index).get();
-				findLastChild();
-			} else {
-				--index;
-			}
-		}
 	} else {
-		if (index != 0) {
-			--index;
-		} else {
+		if (index == 0) {
 			typename btree<Base>::Node* temp = pointee;
-			findNextParent();
+			findLastParent();
 			if (isEnd) {
 				pointee = temp;
-				index = 0;
+				index = 0;		
 			}
+			return *this;
+		} else {
+			--index;
+			return *this;
 		}
 	}
 	return *this;
@@ -148,7 +114,7 @@ btree_iterator<Base, Constness> btree_iterator<Base, Constness>::operator --(int
 
 // go to upper level to find next one
 template <typename Base, template <typename U> class Constness>
-void btree_iterator<Base, Constness>::findNextParent() {
+void btree_iterator<Base, Constness>::findLastParent() {
 	while (pointee->parent.lock().get() != nullptr) {
 		auto parent = pointee->parent.lock().get();
 		size_t i = parent->findIndex(pointee);
@@ -182,7 +148,7 @@ void btree_iterator<Base, Constness>::findLastChild(){
 
 // go to upper level to find last one
 template <typename Base, template <typename U> class Constness>
-void btree_iterator<Base, Constness>::findLastParent(){
+void btree_iterator<Base, Constness>::findNextParent(){
 	while (pointee->parent.lock().get() != nullptr) {
 		auto parent = pointee->parent.lock().get();
 		size_t i = parent->findIndex(pointee);

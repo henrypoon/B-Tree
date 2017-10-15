@@ -42,8 +42,8 @@ int main(void) {
   // initialise random number generator with 'random' seed
 
   // insert lots of random numbers and compare with a known correct container
-  btree<int> t(2);
-  pair<btree<int>::iterator, bool> result = t.insert(1);
+  btree<int> t;
+  // pair<btree<int>::iterator, bool> result = t.insert(1);
   // result = t->insert();
   // result = t->insert(3);
 
@@ -60,22 +60,27 @@ int main(void) {
   // std::cout << *lower << " hey" << std::endl;
 
 
-  result = t.insert(3);
-  result = t.insert(5);
-  result = t.insert(7);
+  // result = t.insert(3);
+  // result = t.insert(5);
+  // result = t.insert(7);
 
-  result = t.insert(0);
+  // result = t.insert(0);
 
   // auto i = t.rbegin();
   // std::cout << *i << std::endl;
 
   // result = t.insert(2);
   // result = t.insert(2);
-  t.printAll();
+  // t.printAll();
 
   std::stringstream actual;
+  actual << t;
+  std::cout << actual;
+  // std::cout << *(t.rbegin()) << std::endl;
 
-
+  // for (auto ite = t.rbegin(); ite != t.rend(); ++ite) {
+  //   std::cout << *ite << std::endl;
+  // }
   // auto tree_nonconst = const_cast<btree<int>&>(t);
 
 	// actual << tree_nonconst;
@@ -86,16 +91,16 @@ int main(void) {
   // t -> printAll();
   // copy -> printAll();
 	std::cout << " hhh " << std::endl; 
-  t.insert(100);
+  // t.insert(100);
   // t.insert(4);
   // std::cout << t << std::endl;
 
   // std::cout << copy << "\n";
 
-  t.printAll();
+  // t.printAll();
   // copy.printAll();
 
-  std::cout << "\n\n\n\n" << result.second << "\n\n";
+  // std::cout << "\n\n\n\n" << result.second << "\n\n";
   return 0;	
 }
 
